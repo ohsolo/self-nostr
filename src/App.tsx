@@ -4,6 +4,7 @@ import "./App.css";
 import NotesList from "./components/NotesList";
 import { useDebounce } from "use-debounce";
 import CreateNote from "./components/CreateNote";
+import HashtagsFilter from "./components/HashtagsFilter";
 
 export const RELAYS = [
   "wss://nostr-pub.wellorder.net",
@@ -25,6 +26,7 @@ function App() {
   const [events] = useDebounce(eventsImmediate, 1500);
   const [metadata, setMetadata] = useState<Record<string, Metadata>>({});
   const metadataFethced = useRef<Record<string, boolean>>({});
+  const [hashtags, setHashtags] = useState<string[]>([]);
 
   useEffect(() => {
     const _pool = new SimplePool();
@@ -42,7 +44,7 @@ function App() {
       {
         kinds: [1],
         limit: 100,
-        "#t": ["nostr"],
+        "#t": hashtags,
       },
     ]);
 
@@ -53,7 +55,7 @@ function App() {
     return () => {
       sub.unsub();
     };
-  }, [pool]);
+  }, [hashtags, pool]);
 
   useEffect(() => {
     if (!pool) return;
@@ -97,7 +99,8 @@ function App() {
     <div>
       <div className="flex flex-col gap-12">
         <h1 className="text-h1 text-white">Nostr Simple Project</h1>
-        <CreateNote pool={pool} />
+        <CreateNote pool={pool} hashtags={hashtags} />
+        <HashtagsFilter hashtags={hashtags} onChange={setHashtags} />
         <NotesList metadata={metadata} notes={events} />
       </div>
     </div>
