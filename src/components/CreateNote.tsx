@@ -4,9 +4,10 @@ import { RELAYS } from "../App";
 
 interface Props {
   pool: SimplePool;
+  hashtags: string[];
 }
 
-export default function CreateNote({ pool }: Props) {
+export default function CreateNote({ pool, hashtags }: Props) {
   const [input, setInput] = useState("");
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -20,7 +21,7 @@ export default function CreateNote({ pool }: Props) {
       content: input,
       created_at: Math.round(Date.now() / 1000),
       kind: 1,
-      tags: [["t", "nostr"]],
+      tags: [...hashtags.map((hashtag) => ["t", hashtag])],
     } as EventTemplate;
 
     try {
